@@ -1,5 +1,5 @@
-use eframe::{run_native, egui, };
-use egui::{FontId, TextStyle::*, FontFamily};
+use eframe::{run_native, egui, epaint::Color32, };
+use egui::{FontId, TextStyle::*, FontFamily, Margin};
 
 #[derive(Default)]
 struct Calc {
@@ -45,16 +45,34 @@ impl Calc {
 }
 
 impl eframe::App for Calc {
-	fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-		egui::CentralPanel::default().show(ctx, |ui| {
-			// Create a new style variable and override things that we want to change (font size).
-			let mut style = (*ctx.style()).clone();	
-			style.text_styles = [(Monospace, FontId::new(15.0, FontFamily::Proportional)),
-								 (Body, FontId::new(15.0, FontFamily::Monospace))].into();
-			ctx.set_style(style);
+	fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+		let properties = egui::Frame::none()
+			.inner_margin(Margin::same(0.0))
+			.fill(Color32::from_rgb(20, 20, 20));
+		
+		egui::CentralPanel::default()
+			.frame(properties)
+			.show(ctx, |ui| {
+				// Create a new style variable and override things that we want to change (font size).
+				let mut style = (*ctx.style()).clone();	
+				style.text_styles = [(Monospace, FontId::new(14.0, FontFamily::Proportional)),
+									 (Body, FontId::new(14.0, FontFamily::Monospace))].into();
+				ctx.set_style(style);
+				frame.set_window_title("Calculator?");
 
-			ui.add_sized(ui.available_size(), 
-						egui::TextEdit::code_editor(egui::TextEdit::multiline(&mut self.input)));
+				// Wrap the text area in a scroll area.
+				egui::ScrollArea::vertical().show(ui, |ui| {
+					egui::Frame::none()
+							.inner_margin(Margin::symmetric(30.0, 10.0))
+							.fill(Color32::TRANSPARENT)
+						.show(ui, |ui| {
+
+							ui.add_sized(ui.available_size(), 
+									egui::TextEdit::multiline(&mut self.input)
+											.code_editor()
+											.frame(false));
+					});
+				});
        });
    }
 }
