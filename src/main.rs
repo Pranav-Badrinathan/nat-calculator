@@ -4,6 +4,7 @@ use egui::{FontId, TextStyle::*, FontFamily, Margin};
 #[derive(Default)]
 struct Calc {
 	input: String,
+	output: String,
 }
 
 impl Calc {
@@ -66,11 +67,20 @@ impl eframe::App for Calc {
 							.inner_margin(Margin::symmetric(30.0, 10.0))
 							.fill(Color32::TRANSPARENT)
 						.show(ui, |ui| {
+							
+							ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui|{
+								
+								// The "Answers" panel. the "&*" in front of the output re-references it. String -> &str 
+								ui.add_sized([100.0, ui.available_size().y],
+										egui::TextEdit::multiline(&mut &*self.output)
+												.frame(false));
 
-							ui.add_sized(ui.available_size(), 
-									egui::TextEdit::multiline(&mut self.input)
-											.code_editor()
-											.frame(false));
+								// The main writing space.
+								ui.add_sized(ui.available_size(), 
+										egui::TextEdit::multiline(&mut self.input)
+												.code_editor()
+												.frame(false));
+							});
 					});
 				});
        });
